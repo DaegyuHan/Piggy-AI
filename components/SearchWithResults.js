@@ -22,7 +22,7 @@ export default function SearchWithResults() {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Data from server:', data);
-                setRestaurants(data.restaurants); // 서버에서 받은 맛집 정보로 상태 업데이트
+                setRestaurants(data.recommendedCafes); // 서버에서 받은 맛집 정보로 상태 업데이트
             } else {
                 console.error("호출 실패");
             }
