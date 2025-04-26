@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         const { query } = req.body;  // 클라이언트에서 전달된 검색어
 
         const queryText = `
-"${query}에 있는 인기 카페 5군데를 추천해 주세요. 각 카페의 최신 정보는 구글 지도, 네이버 지도, 트립어드바이저 등에서 확인할 수 있는 링크와 함께 제공해 주세요. 
+"${query}에 있는 인기 카페 5군데를 추천해 주세요.
 각 카페의 정보는 아래 형식으로 제공해주세요:
 1. 이름: [카페 이름]
 2. 주소: [카페 주소]
