@@ -5,22 +5,26 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function searchCafesFromNaver(query) {
-    const url = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query + ' 주변 카페')}&display=10&start=1`;
+async function searchCafesFromKakao(query) {
+    const url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(query + ' 카페')}&category_group_code=CE7&size=15`;
 
-    const response = await axios.get(url, {
-        headers: {
-            'X-Naver-Client-Id': process.env.NAVER_CLIENT_ID,
-            'X-Naver-Client-Secret': process.env.NAVER_CLIENT_SECRET,
-        },
-    });
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: `KakaoAK ${process.env.KAKAO_API_KEY}`,
+            },
+        });
 
-    console.log('✅ 전체 검색 결과 수(total):', response.data.total);
-    console.log('✅ 이번에 가져온 개수(display):', response.data.display);
-    console.log('✅ 실제 받은 items 길이:', response.data.items.length);
-    console.log('✅ 실제 받은 items:', JSON.stringify(response.data.items, null, 2));
+        console.log('✅ 전체 검색 결과 수(total_count):', response.data.meta.total_count);
+        console.log('✅ 이번에 가져온 개수(pageable_count):', response.data.meta.pageable_count);
+        console.log('✅ 실제 받은 items 길이:', response.data.documents.length);
+        // console.log('✅ 실제 받은 items:', JSON.stringify(response.data.documents, null, 2));
 
-    return response.data.items; // 카페 리스트
+        return response.data.documents;
+    } catch (error) {
+        console.error('카카오 API 오류:', error.response ? error.response.data : error.message);
+        throw error;
+    }
 }
 
 export default async function handler(req, res) {
@@ -28,21 +32,21 @@ export default async function handler(req, res) {
         const { query } = req.body;
 
         try {
-            // 1. 네이버에서 카페 리스트 가져오기
-            const cafes = await searchCafesFromNaver(query);
+            // 1. 카카오에서 카페 리스트 가져오기
+            const cafes = await searchCafesFromKakao(query);
 
             // 2. 가져온 카페 리스트를 기반으로 AI 프롬프트 구성
-            const cafesInfo = cafes.map((cafe, idx) => `${idx + 1}. 이름: ${cafe.title.replace(/<[^>]*>?/g, '')}, 주소: ${cafe.address}`).join('\n');
+            const cafesInfo = cafes.map((cafe, idx) => `${idx + 1}. 이름: ${cafe.place_name}, 주소: ${cafe.address_name}`).join('\n');
 
             const prompt = `
                     카페 목록:
                     ${cafesInfo}
-                    다음은 ${query} 주변의 카페 목록입니다. 이 중에서 5곳을 아래의 형식으로 추천해주세요.
+                    다음은 ${query} 주변의 카페 목록입니다. 이 중에서 5곳을 아래의 형식으로 추천해주세요. 추천 이유는 개성있게 표현해주세요.
                     1. 이름: [카페 이름]
                     2. 주소: [카페 주소]
                     3. 추천 이유: [한줄 추천 이유]
                     `;
-            // console.log(prompt)
+            console.log(prompt)
 
             // 3. OpenAI에 추천 요청
             const completion = await openai.chat.completions.create({
@@ -54,7 +58,7 @@ export default async function handler(req, res) {
 
             const responseText = completion.choices[0].message.content.trim();
             console.log('########################################################');
-            // console.log('Received OpenAI response:', responseText);
+            console.log('Received OpenAI response:', responseText);
 
             // 4. AI 응답 파싱
             const recommendedCafes = responseText

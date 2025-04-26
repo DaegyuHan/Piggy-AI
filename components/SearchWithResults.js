@@ -56,7 +56,7 @@ export default function SearchWithResults() {
                             <li key={index} className="p-4 border-b">
                                 <h3 className="font-semibold">{restaurant.name}</h3>
                                 <p>{restaurant.address}</p>
-                                <p>{restaurant.description}</p>
+                                <p>{restaurant.reason}</p>
                                 <a
                                     href={"https://map.naver.com/p/search/" + restaurant.name}
                                     target="_blank"
