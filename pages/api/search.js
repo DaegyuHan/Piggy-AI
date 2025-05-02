@@ -41,10 +41,7 @@ export default async function handler(req, res) {
             const prompt = `
                     카페 목록:
                     ${cafesInfo}
-                    다음은 ${query} 주변의 카페 목록입니다. 이 중에서 5곳을 아래의 형식으로 추천해주세요. 추천 이유는 개성있게 표현해주세요.
-                    1. 이름: [카페 이름]
-                    2. 주소: [카페 주소]
-                    3. 추천 이유: [한줄 추천 이유]
+                    다음은 ${query} 주변의 카페 목록입니다. 이 카페들을 인터넷으로 검색해서 추천해줘 . 이유도 알려줘 순위매겨줘
                     `;
             console.log(prompt)
 
@@ -60,26 +57,35 @@ export default async function handler(req, res) {
             console.log('########################################################');
             console.log('Received OpenAI response:', responseText);
 
-            // 4. AI 응답 파싱
+// 4. AI 응답 파싱
             const recommendedCafes = responseText
                 .split("\n\n")
                 .map(item => item.trim())
                 .filter(item => item.length > 0)
                 .map(item => {
                     const nameMatch = item.match(/이름:\s*(.*)/);
-                    const addressMatch = item.match(/주소:\s*(.*)/);
                     const reasonMatch = item.match(/추천 이유:\s*(.*)/);
 
-                    if (nameMatch && addressMatch && reasonMatch) {
+                    if (nameMatch && reasonMatch) {
+                        const name = nameMatch[1].trim();
+                        const reason = reasonMatch[1].trim();
+
+                        // cafes 리스트에서 이름이 일치하는 카페의 주소 찾기
+                        const matchedCafe = cafes.find(cafe => cafe.place_name === name);
+                        const address = matchedCafe ? matchedCafe.address_name : '주소 정보 없음';
+                        const placeUrl = matchedCafe ? matchedCafe.place_url : null;
+
                         return {
-                            name: nameMatch[1].trim(),
-                            address: addressMatch[1].trim(),
-                            reason: reasonMatch[1].trim(),
+                            name,
+                            address,
+                            reason,
+                            placeUrl,
                         };
                     }
                     return null;
                 })
                 .filter(item => item !== null);
+
 
             res.status(200).json({ recommendedCafes });
         } catch (error) {

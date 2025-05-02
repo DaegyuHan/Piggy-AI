@@ -58,12 +58,12 @@ export default function SearchWithResults() {
                                 <p>{restaurant.address}</p>
                                 <p>{restaurant.reason}</p>
                                 <a
-                                    href={"https://map.naver.com/p/search/" + restaurant.name}
+                                    href={restaurant.placeUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-500"
                                 >
-                                    네이버 지도에서 보기
+                                    카카오 맵에서 보기
                                 </a>
                             </li>
                         ))
