@@ -39,12 +39,13 @@ export default function SearchWithResults() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-start pt-16 min-h-screen bg-gradient-to-b from-grjay-100 to-gray-100 px-4">
+        <div className="flex flex-col items-center justify-start pt-16 min-h-screen bg-gradient-to-b from-grjay-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
             <div className="w-full max-w-2xl mb-6">
+                <h2 className="text-xl font-bold mb-4 text-gray-800">동네를 입력해주세요</h2>
                 <div className="relative">
                     <input
                         type="text"
-                        placeholder="동네를 입력하세요"
+                        placeholder="ex) 수원 행궁동"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         className="w-full py-4 pl-5 pr-14 text-lg rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
@@ -54,13 +55,12 @@ export default function SearchWithResults() {
                         className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 hover:text-blue-700 transition"
                         aria-label="검색"
                     >
-                        <FaSearch size={22} />
+                        <FaSearch size={22}/>
                     </button>
                 </div>
             </div>
 
             <div className="w-full max-w-2xl">
-                <h2 className="text-xl font-bold mb-4 text-gray-800">추천 맛집</h2>
                 {loading ? (
                     <LoadingSpinner />
                 ) : (

@@ -6,7 +6,11 @@ module.exports = {
         "./components/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                cream: '#FBEFD9',
+            },
+        },
     },
     plugins: [], // ✅ 이렇게 [] 빈 배열로!
 };
