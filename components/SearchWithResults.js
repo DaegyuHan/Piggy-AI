@@ -45,7 +45,7 @@ export default function SearchWithResults() {
                 <div className="relative">
                     <input
                         type="text"
-                        placeholder="ex) 수원 행궁동"
+                        placeholder="ex) 행궁동"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         className="w-full py-4 pl-5 pr-14 text-lg rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"

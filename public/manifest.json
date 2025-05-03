@@ -1,0 +1,20 @@
+{
+  "name": "Piggy AI",
+  "short_name": "Piggy",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FBEFD9",
+  "icons": [
+    {
+      "src": "/piggy2.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/piggy2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
