@@ -36,13 +36,23 @@ export default async function handler(req, res) {
             const cafes = await searchCafesFromKakao(query);
 
             // 2. 가져온 카페 리스트를 기반으로 AI 프롬프트 구성
-            const cafesInfo = cafes.map((cafe, idx) => `${idx + 1}. 이름: ${cafe.place_name}, 주소: ${cafe.address_name}`).join('\n');
+            const cafesInfo = cafes.map((cafe, idx) => `${idx + 1}. 이름: ${cafe.place_name}`).join('\n');
 
             const prompt = `
                     카페 목록:
                     ${cafesInfo}
-                    다음은 ${query} 주변의 카페 목록입니다. 이 카페들을 인터넷으로 검색해서 추천해줘 . 이유도 알려줘 순위매겨줘
+                    다음은 ${query} 주변의 카페 목록입니다. 이 카페들을 인터넷으로 검색해서 5곳을 추천해주고 이유도 한 줄로 알려주세요. 아래 형식으로 맞춰주세요.
+                    
+                    1. 이름: [카페이름]
+                    2. 추천 이유: [한줄 추천 이유]
                     `;
+            // const prompt = `
+            //         카페 목록:
+            //         ${cafesInfo}
+            //         다음은 ${query} 주변의 카페 목록입니다. 이 중에서 5곳을 아래의 형식으로 추천해주세요. 추천 이유는 개성있게 표현해주세요.
+            //         1. 이름: [카페 이름]
+            //         2. 추천 이유: [한줄 추천 이유]
+            //         `;
             console.log(prompt)
 
             // 3. OpenAI에 추천 요청
