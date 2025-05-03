@@ -1,15 +1,20 @@
-'use client'
+'use client';
 
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function SearchWithResults() {
     const [query, setQuery] = useState("");
     const [restaurants, setRestaurants] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false); // 검색 여부 상태 추가
 
     const handleSearch = async () => {
-        if (!query.trim()) return; // 빈 문자열이면 리턴
+        if (!query.trim()) return;
 
+        setLoading(true);
+        setHasSearched(true); // 검색 버튼 누르면 true
         try {
             const response = await fetch('/api/search', {
                 method: 'POST',
@@ -21,13 +26,15 @@ export default function SearchWithResults() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Data from server:', data);
-                setRestaurants(data.recommendedCafes); // 서버에서 받은 맛집 정보로 상태 업데이트
+                setRestaurants(data.recommendedCafes);
             } else {
-                console.error("호출 실패");
+                setRestaurants([]);
             }
         } catch (error) {
             console.error("에러 발생", error);
+            setRestaurants([]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -49,28 +56,31 @@ export default function SearchWithResults() {
             </div>
 
             <div className="mt-8 w-2/3">
-                <h2>추천 맛집</h2>
-                <ul>
-                    {restaurants.length > 0 ? (
-                        restaurants.map((restaurant, index) => (
-                            <li key={index} className="p-4 border-b">
-                                <h3 className="font-semibold">{restaurant.name}</h3>
-                                <p>{restaurant.address}</p>
-                                <p>{restaurant.reason}</p>
-                                <a
-                                    href={restaurant.placeUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-500"
-                                >
-                                    카카오 맵에서 보기
-                                </a>
-                            </li>
-                        ))
-                    ) : (
-                        <li>검색 결과가 없습니다.</li>
-                    )}
-                </ul>
+                {loading ? (
+                    <LoadingSpinner />
+                ) : (
+                    <ul>
+                        {restaurants.length > 0 ? (
+                            restaurants.map((restaurant, index) => (
+                                <li key={index} className="p-4 border-b">
+                                    <h3 className="font-semibold">{restaurant.name}</h3>
+                                    <p>{restaurant.address}</p>
+                                    <p>{restaurant.reason}</p>
+                                    <a
+                                        href={restaurant.placeUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500"
+                                    >
+                                        카카오 맵에서 보기
+                                    </a>
+                                </li>
+                            ))
+                        ) : (
+                            hasSearched && <li>검색 결과가 없습니다.</li> // 검색 후에만 표시
+                        )}
+                    </ul>
+                )}
             </div>
         </div>
     );
