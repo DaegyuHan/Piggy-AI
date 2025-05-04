@@ -10,6 +10,49 @@ export default function SearchWithResults() {
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
 
+    const getCurrentPosition = () => {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error("Geolocation is not supported"));
+            } else {
+                navigator.geolocation.getCurrentPosition(resolve, reject);
+            }
+        });
+    };
+
+    // 사용자 위치 기반으로 검색
+    const handleLocationSearch = async () => {
+        setLoading(true);
+        setHasSearched(true);
+
+        try {
+            const pos = await getCurrentPosition(); // 여기서 에러가 해결됨
+            const { latitude, longitude } = pos.coords;
+
+            const response = await fetch('/api/search/nearby', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ latitude, longitude }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setRestaurants(data.recommendedCafes);
+            } else {
+                setRestaurants([]);
+            }
+        } catch (err) {
+            console.error("위치 기반 검색 실패", err);
+            alert("위치 정보를 가져올 수 없습니다. 권한을 허용했는지 확인하세요.");
+            setRestaurants([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     const handleSearch = async () => {
         if (!query.trim()) return;
 
@@ -64,6 +107,15 @@ export default function SearchWithResults() {
                         <FaSearch size={22}/>
                     </button>
                 </div>
+            </div>
+
+            <div className="w-full max-w-2xl mb-6">
+                <button
+                    onClick={handleLocationSearch}
+                    className="text-blue-600 hover:underline"
+                >
+                    내 주변 검색하기
+                </button>
             </div>
 
             <div className="w-full max-w-2xl">
