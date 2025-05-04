@@ -45,11 +45,17 @@ export default function SearchWithResults() {
                 <div className="relative">
                     <input
                         type="text"
-                        placeholder="ex) 행궁동"
+                        placeholder="ex) 수원 행궁동"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleSearch();
+                            }
+                        }}
                         className="w-full py-4 pl-5 pr-14 text-lg rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                     />
+
                     <button
                         onClick={handleSearch}
                         className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 hover:text-blue-700 transition"
@@ -62,7 +68,7 @@ export default function SearchWithResults() {
 
             <div className="w-full max-w-2xl">
                 {loading ? (
-                    <LoadingSpinner />
+                    <LoadingSpinner/>
                 ) : (
                     <ul className="space-y-4">
                         {restaurants.length > 0 ? (
