@@ -15,11 +15,14 @@ export const metadata = {
   title: "Piggy AI",
   description: "AI 기반 지역별 카페 추천 웹 서비스",
   manifest: "/manifest.json",
-  themeColor: "#FBEFD9",
   icons: {
     icon: "/piggy-icon-192.png",
     apple: "/piggy-icon-192.png",
   },
+};
+
+export const viewport = {
+  themeColor: "#FBEFD9",
 };
 
 export default function RootLayout({ children }) {
