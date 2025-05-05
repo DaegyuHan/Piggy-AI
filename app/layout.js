@@ -31,6 +31,11 @@ export default function RootLayout({ children }) {
     <head>
       <meta name="google-adsense-account" content="ca-pub-4773424574264862"/>
       <meta name="google-site-verification" content="8CZfFFGQ5phRRqwGFpQ0mIFvbnU68tqWSHoI06_hoCM"/>
+      <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4773424574264862"
+          crossOrigin="anonymous"
+      ></script>
     </head>
     <body className={`${geistSans.variable} ${geistMono.variable}`}>
     {children}
