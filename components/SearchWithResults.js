@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useState} from "react";
-import {FaRegBookmark, FaSearch, FaBookmark} from "react-icons/fa";
+import {FaBookmark, FaRegBookmark, FaSearch} from "react-icons/fa";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import PopularSearches from "@/components/PopularSearches";
 
@@ -41,14 +41,14 @@ export default function SearchWithResults() {
 
         try {
             const pos = await getCurrentPosition();
-            const { latitude, longitude } = pos.coords;
+            const {latitude, longitude} = pos.coords;
 
             const response = await fetch('/api/search/nearby', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ latitude, longitude }),
+                body: JSON.stringify({latitude, longitude}),
             });
 
             if (response.ok) {
@@ -78,7 +78,7 @@ export default function SearchWithResults() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ query }),
+                body: JSON.stringify({query}),
             });
 
             if (response.ok) {
@@ -111,7 +111,8 @@ export default function SearchWithResults() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-start pt-16 min-h-screen bg-gradient-to-b from-grjay-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
+        <div
+            className="flex flex-col items-center justify-start pt-16 min-h-screen bg-gradient-to-b from-grjay-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
             <div className="w-full max-w-2xl mb-6">
                 <h2 className="text-xl font-bold mb-4 text-gray-800">동네를 입력해주세요</h2>
                 <div className="relative">
@@ -132,7 +133,7 @@ export default function SearchWithResults() {
                         className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 hover:text-blue-700 transition"
                         aria-label="검색"
                     >
-                        <FaSearch size={22} />
+                        <FaSearch size={22}/>
                     </button>
                 </div>
                 {warning && (
@@ -151,9 +152,12 @@ export default function SearchWithResults() {
 
             <div className="w-full max-w-2xl">
                 {loading ? (
-                    <LoadingSpinner />
+                    <LoadingSpinner/>
                 ) : (
                     <ul className="space-y-4">
+                        <h2 className="text-xl font-bold mb-4 text-gray-800">
+                            {query ? `'${query}' 주변 카페 검색 결과` : "주변 카페 검색 결과"}
+                        </h2>
                         {cafes.length > 0 ? (
                             cafes.map((cafe, index) => (
                                 <li
