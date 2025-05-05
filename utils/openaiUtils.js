@@ -1,12 +1,12 @@
 export function createCafePrompt(cafes) {
     const cafesInfo = cafes
-        .map((cafe, idx) => `${idx + 1}. 이름: ${cafe.place_name}`)
+        .map((cafe, idx) => `${idx + 1}. ${cafe.place_name}`)
         .join('\n');
 
     return `
 카페 목록:
 ${cafesInfo}
-다음 카페들 중 5곳을 추천해주고 이유도 한 줄로 알려주세요. 아래 형식으로 맞춰주세요. 보드게임, 벌툰, 스타벅스, 메가커피 등 브랜드는 제외해주세요.
+다음 카페들 중 5곳을 추천해주고 이유도 한 줄로 알려주세요. 아래 형식으로 맞춰주세요. 보드게임, 벌툰, 설빙, 이디야, 투썸, 메가커피, 컴포즈커피 등 프랜차이즈 브랜드는 제외해주세요.
 
 1. 이름: [카페이름]
 2. 추천 이유: [한줄 추천 이유]

@@ -1,16 +1,29 @@
 'use client';
 
-import { useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import {useEffect, useState} from "react";
+import {FaRegBookmark, FaSearch, FaBookmark} from "react-icons/fa";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import PopularSearches from "@/components/PopularSearches";
 
 export default function SearchWithResults() {
     const [query, setQuery] = useState("");
-    const [restaurants, setRestaurants] = useState([]);
+    const [cafes, setCafes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [warning, setWarning] = useState("");
+    const [favorites, setFavorites] = useState([]); // 각 카페의 즐겨찾기 여부를 저장
+
+    useEffect(() => {
+        setFavorites(cafes.map(() => false)); // cafes가 바뀔 때마다 초기화
+    }, [cafes]);
+
+    const toggleFavorite = (index) => {
+        setFavorites((prev) => {
+            const updated = [...prev];
+            updated[index] = !updated[index];
+            return updated;
+        });
+    };
 
     const getCurrentPosition = () => {
         return new Promise((resolve, reject) => {
@@ -40,14 +53,14 @@ export default function SearchWithResults() {
 
             if (response.ok) {
                 const data = await response.json();
-                setRestaurants(data.recommendedCafes);
+                setCafes(data.recommendedCafes);
             } else {
-                setRestaurants([]);
+                setCafes([]);
             }
         } catch (err) {
             console.error("위치 기반 검색 실패", err);
             alert("위치 정보를 가져올 수 없습니다. 권한을 허용했는지 확인하세요.");
-            setRestaurants([]);
+            setCafes([]);
         } finally {
             setLoading(false);
         }
@@ -70,9 +83,9 @@ export default function SearchWithResults() {
 
             if (response.ok) {
                 const data = await response.json();
-                setRestaurants(data.recommendedCafes);
+                setCafes(data.recommendedCafes);
             } else {
-                setRestaurants([]);
+                setCafes([]);
             }
         } catch (error) {
             console.error('에러 발생:', error);
@@ -81,7 +94,7 @@ export default function SearchWithResults() {
             } else {
                 setWarning('서버 오류가 발생했습니다. 다시 시도해주세요.');
             }
-            setRestaurants([]);
+            setCafes([]);
         } finally {
             setLoading(false);
         }
@@ -141,14 +154,25 @@ export default function SearchWithResults() {
                     <LoadingSpinner />
                 ) : (
                     <ul className="space-y-4">
-                        {restaurants.length > 0 ? (
-                            restaurants.map((restaurant, index) => (
-                                <li key={index} className="p-5 rounded-lg bg-white shadow hover:shadow-md transition border">
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-1">{restaurant.name}</h3>
-                                    <p className="text-gray-600 text-sm">{restaurant.address}</p>
-                                    <p className="text-gray-700 mt-2">{restaurant.reason}</p>
+                        {cafes.length > 0 ? (
+                            cafes.map((cafe, index) => (
+                                <li
+                                    key={index}
+                                    className="relative p-5 rounded-lg bg-white shadow hover:shadow-md transition border"
+                                >
+                                    <button
+                                        onClick={() => toggleFavorite(index)}
+                                        className="absolute top-4 right-4 text-blue-600 hover:scale-110 transition"
+                                        aria-label="즐겨찾기"
+                                    >
+                                        {favorites[index] ? <FaBookmark size={20}/> : <FaRegBookmark size={20}/>}
+                                    </button>
+
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-1">{cafe.name}</h3>
+                                    <p className="text-gray-600 text-sm">{cafe.address}</p>
+                                    <p className="text-gray-700 mt-2">{cafe.reason}</p>
                                     <a
-                                        href={restaurant.placeUrl}
+                                        href={cafe.placeUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-block mt-3 text-sm text-blue-600 hover:underline"
