@@ -12,13 +12,16 @@ export default function AdBanner({ slot = '7010780807' }) {
     }, []);
 
     return (
-        <ins
-            className="adsbygoogle"
-            style={{ display: 'block' }}
-            data-ad-client="ca-pub-4773424574264862"
-            data-ad-slot={slot}
-            data-ad-format="auto"
-            data-full-width-responsive="true"
-        ></ins>
+        <div style={{width: '100%', minHeight: '100px'}}>
+            <ins
+                className="adsbygoogle"
+                style={{display: 'block'}}
+                data-ad-client="ca-pub-4773424574264862"
+                data-ad-slot={slot}
+                data-ad-format="auto"
+                data-full-width-responsive="true"
+            />
+        </div>
+
     );
 }
