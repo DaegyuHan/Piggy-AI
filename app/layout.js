@@ -28,9 +28,13 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-      </body>
+    <head>
+      <meta name="google-adsense-account" content="ca-pub-4773424574264862"/>
+      <meta name="google-site-verification" content="8CZfFFGQ5phRRqwGFpQ0mIFvbnU68tqWSHoI06_hoCM"/>
+    </head>
+    <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    {children}
+    </body>
     </html>
   );
 }
