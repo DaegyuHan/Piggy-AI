@@ -9,7 +9,7 @@ export default function SearchWithResults() {
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
-    const [warning, setWarning] = useState("");  // 경고 메시지 상태 추가
+    const [warning, setWarning] = useState("");
 
     const getCurrentPosition = () => {
         return new Promise((resolve, reject) => {
@@ -74,7 +74,12 @@ export default function SearchWithResults() {
                 setRestaurants([]);
             }
         } catch (error) {
-            console.error("에러 발생", error);
+            console.error('에러 발생:', error);
+            if (error.message === '검색 결과가 없습니다.') {
+                setWarning(error.message);
+            } else {
+                setWarning('서버 오류가 발생했습니다. 다시 시도해주세요.');
+            }
             setRestaurants([]);
         } finally {
             setLoading(false);

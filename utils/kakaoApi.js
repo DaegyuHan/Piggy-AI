@@ -8,6 +8,12 @@ export async function searchCafesFromKakao(query) {
     console.log('✅ 전체 검색 결과 수(total_count):', response.data.meta.total_count);
     console.log('✅ 이번에 가져온 개수(pageable_count):', response.data.meta.pageable_count);
     console.log('✅ 실제 받은 items 길이:', response.data.documents.length);
+
+    // 만약 검색 결과가 없으면 에러
+    if (response.data.documents.length === 0) {
+        throw new Error('검색 결과가 없습니다.');
+    }
+
     return response.data.documents;
 }
 
