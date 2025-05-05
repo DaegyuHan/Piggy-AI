@@ -9,6 +9,7 @@ export default function SearchWithResults() {
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    const [warning, setWarning] = useState("");  // 경고 메시지 상태 추가
 
     const getCurrentPosition = () => {
         return new Promise((resolve, reject) => {
@@ -20,13 +21,12 @@ export default function SearchWithResults() {
         });
     };
 
-    // 사용자 위치 기반으로 검색
     const handleLocationSearch = async () => {
         setLoading(true);
         setHasSearched(true);
 
         try {
-            const pos = await getCurrentPosition(); // 여기서 에러가 해결됨
+            const pos = await getCurrentPosition();
             const { latitude, longitude } = pos.coords;
 
             const response = await fetch('/api/search/nearby', {
@@ -52,12 +52,12 @@ export default function SearchWithResults() {
         }
     };
 
-
     const handleSearch = async () => {
         if (!query.trim()) return;
 
         setLoading(true);
         setHasSearched(true);
+
         try {
             const response = await fetch('/api/search', {
                 method: 'POST',
@@ -81,6 +81,16 @@ export default function SearchWithResults() {
         }
     };
 
+    const handleChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= 10) {
+            setQuery(value);
+            setWarning(""); // 입력이 정상적으로 진행되면 경고 메시지 초기화
+        } else {
+            setWarning("입력할 수 있는 글자 수는 10자 이하로 제한됩니다.");
+        }
+    };
+
     return (
         <div className="flex flex-col items-center justify-start pt-16 min-h-screen bg-gradient-to-b from-grjay-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
             <div className="w-full max-w-2xl mb-6">
@@ -90,7 +100,7 @@ export default function SearchWithResults() {
                         type="text"
                         placeholder="ex) 수원 행궁동"
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onChange={handleChange}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 handleSearch();
@@ -98,15 +108,17 @@ export default function SearchWithResults() {
                         }}
                         className="w-full py-4 pl-5 pr-14 text-lg rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                     />
-
                     <button
                         onClick={handleSearch}
                         className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 hover:text-blue-700 transition"
                         aria-label="검색"
                     >
-                        <FaSearch size={22}/>
+                        <FaSearch size={22} />
                     </button>
                 </div>
+                {warning && (
+                    <p className="text-red-500 mt-2 text-sm">{warning}</p> // 경고 메시지 출력
+                )}
             </div>
 
             <div className="w-full max-w-2xl mb-6">
@@ -120,7 +132,7 @@ export default function SearchWithResults() {
 
             <div className="w-full max-w-2xl">
                 {loading ? (
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 ) : (
                     <ul className="space-y-4">
                         {restaurants.length > 0 ? (
