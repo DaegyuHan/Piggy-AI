@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import PopularSearches from "@/components/PopularSearches";
 
 export default function SearchWithResults() {
     const [query, setQuery] = useState("");
@@ -166,6 +167,7 @@ export default function SearchWithResults() {
                     </ul>
                 )}
             </div>
+            <PopularSearches/>
         </div>
     );
 }
