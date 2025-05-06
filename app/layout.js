@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
       ></script>
     </head>
-    <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <body className={`bg-gray-100 ${geistSans.variable} ${geistMono.variable}`}>
     <NavBar/>
     {children}
     <Footer/>

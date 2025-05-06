@@ -12,5 +12,5 @@ module.exports = {
             },
         },
     },
-    plugins: [], // ✅ 이렇게 [] 빈 배열로!
+    plugins: [],
 };

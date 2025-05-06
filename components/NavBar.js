@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function NavBar() {
     return (
-        <nav className="w-full bg-cream shadow-md">
+        <nav className="w-full bg-cream drop-shadow-[0_4px_6px_rgba(0,0,0,0.1)]">
             <div className="container mx-auto flex justify-center items-center">
                 <Link href="/">
                     <Image
