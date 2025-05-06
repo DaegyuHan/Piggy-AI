@@ -1,8 +1,8 @@
 'use client';
 
-import {useState} from "react";
-import {useRouter} from "next/navigation";
-import {FaSearch} from "react-icons/fa";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FaSearch } from "react-icons/fa";
 import PopularSearches from "@/components/PopularSearches";
 
 export default function SearchInput() {
@@ -38,13 +38,13 @@ export default function SearchInput() {
     const handleLocationSearch = async () => {
         try {
             const pos = await getCurrentPosition();
-            const {latitude, longitude} = pos.coords;
+            const { latitude, longitude } = pos.coords;
 
             // 위치 기반 검색 API 호출
             const response = await fetch('/api/search/nearby', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({latitude, longitude}),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ latitude, longitude }),
             });
 
             if (response.ok) {
@@ -61,9 +61,9 @@ export default function SearchInput() {
     };
 
     return (
-        <div className="w-full max-w-2xl mb-6">
+        <div className="w-full max-w-2xl mb-6 px-4">
             <h2 className="text-xl font-bold mt-4 mb-4 text-gray-800">동네를 입력해주세요</h2>
-            <div className="relative">
+            <div className="relative flex items-center">
                 <input
                     type="text"
                     placeholder="ex) 수원 행궁동"
@@ -79,14 +79,14 @@ export default function SearchInput() {
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 hover:text-blue-700 transition"
                     aria-label="검색"
                 >
-                    <FaSearch size={22}/>
+                    <FaSearch size={22} />
                 </button>
             </div>
             {warning && (
                 <p className="text-red-500 mt-2 text-sm">{warning}</p>
             )}
 
-            <div className="w-full max-w-2xl mt-2 mb-2">
+            <div className="w-full mt-2 mb-2">
                 <button
                     onClick={handleLocationSearch}
                     className="text-blue-600 hover:underline"

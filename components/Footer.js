@@ -14,7 +14,7 @@ function Footer() {
                     © {new Date().getFullYear()} Piggy AI. All rights reserved.
                 </p>
                 <p className="text-sm mt-2">
-                    tv0.1.5
+                    tv0.1.6
                 </p>
             </div>
         </div>
