@@ -1,16 +1,10 @@
-// /app/search/SearchInput.js
-
 'use client';
 
-import { useEffect, useState } from "react";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import { useEffect, useState } from 'react';
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { useSearchParams } from 'next/navigation';
 
-export default function SearchPageWithResults() {
-    const searchParams = useSearchParams();
-    const query = searchParams.get('query') || "";
-
+export default function CafeListWithResults({ query, latitude, longitude }) {
     const [cafes, setCafes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
@@ -19,23 +13,33 @@ export default function SearchPageWithResults() {
     const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
-        if (!query) return;
+        if (!query && !(latitude && longitude)) return;
 
         setLoading(true);
         setHasSearched(true);
 
         const fetchData = async () => {
             try {
-                const response = await fetch(`/api/search`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query }),
-                });
+                let response;
+
+                if (query) {
+                    response = await fetch(`/api/search`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ query }),
+                    });
+                } else {
+                    response = await fetch(`/api/search/nearby`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ latitude, longitude }),
+                    });
+                }
 
                 if (response.ok) {
                     const data = await response.json();
-                    setCafes(data.recommendedCafes);
-                    setSearchTitle(query);
+                    setCafes(data.recommendedCafes || []);
+                    setSearchTitle(query ? query : "내 위치");
                 } else {
                     setCafes([]);
                 }
@@ -49,7 +53,7 @@ export default function SearchPageWithResults() {
         };
 
         fetchData();
-    }, [query]);
+    }, [query, latitude, longitude]);
 
     useEffect(() => {
         setFavorites(cafes.map(() => false));
@@ -64,7 +68,7 @@ export default function SearchPageWithResults() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-start pt-1 min-h-screen bg-gradient-to-b from-grjay-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
+        <div className="flex flex-col items-center justify-start pt-1 min-h-screen bg-gradient-to-b from-gray-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
             <div className="w-full max-w-2xl mb-6">
                 {loading ? (
                     <LoadingSpinner />
@@ -87,7 +91,7 @@ export default function SearchPageWithResults() {
                                             {favorites[index] ? <FaBookmark size={20} /> : <FaRegBookmark size={20} />}
                                         </button>
                                         <h3 className="text-lg font-semibold text-gray-800 mb-1">{cafe.name}</h3>
-                                        <p className="text-gray-600 text-sm">{cafe.address}</p>
+                                        <p className="text-gray-600 text-sm">{cafe.address || cafe.road_address_name}</p>
                                         <p className="text-gray-700 mt-2">{cafe.reason}</p>
                                         <a
                                             href={cafe.placeUrl}
@@ -107,6 +111,7 @@ export default function SearchPageWithResults() {
                                 )
                             )}
                         </ul>
+                        {warning && <p className="text-red-500 mt-4">{warning}</p>}
                     </>
                 )}
             </div>
