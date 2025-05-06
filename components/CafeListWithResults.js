@@ -34,7 +34,7 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
                 const data = await res.json();
                 setAllCafes(data.allCafes || []);
                 setRecommended(data.recommendedCafes || []);
-                setSearchTitle(query ? query : "내 위치");
+                setSearchTitle(query ? query : "내 주변");
                 setPage(1);
             } catch (error) {
                 console.error('에러 발생:', error);
@@ -98,7 +98,7 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
                     <>
                         {searchTitle && (
                             <h2 className="text-xl font-bold mb-4 text-gray-800">
-                                "{searchTitle}" 주변 카페 검색 결과
+                                "{searchTitle}" 카페 검색 결과
                             </h2>
                         )}
                         <ul className="space-y-4">

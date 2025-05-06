@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import SearchInput from "@/components/SearchInput";
 import CafeListWithResults from "@/components/CafeListWithResults";
+import PopularSearches from "@/components/PopularSearches";
 
 function NearbyContent() {
     const searchParams = useSearchParams();
@@ -22,6 +23,7 @@ export default function NearbyPage() {
             <Suspense fallback={<div>내 주변 카페 불러오는 중...</div>}>
                 <NearbyContent />
             </Suspense>
+            <PopularSearches/>
         </div>
     );
 }

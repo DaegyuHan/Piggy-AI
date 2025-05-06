@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import SearchInput from "@/components/SearchInput";
 import CafeListWithResults from "@/components/CafeListWithResults";
+import PopularSearches from "@/components/PopularSearches";
 
 function SearchPageContent() {
     const searchParams = useSearchParams();
@@ -19,6 +20,7 @@ export default function SearchPage() {
             <Suspense fallback={<div>검색 결과 불러오는 중...</div>}>
                 <SearchPageContent />
             </Suspense>
+            <PopularSearches/>
         </div>
     );
 }
