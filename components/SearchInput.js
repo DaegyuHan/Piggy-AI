@@ -40,20 +40,8 @@ export default function SearchInput() {
             const pos = await getCurrentPosition();
             const { latitude, longitude } = pos.coords;
 
-            // 위치 기반 검색 API 호출
-            const response = await fetch('/api/search/nearby', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ latitude, longitude }),
-            });
+            router.push(`/nearby?latitude=${latitude}&longitude=${longitude}`);
 
-            if (response.ok) {
-                const data = await response.json();
-                // 검색된 결과를 보여주는 페이지로 리다이렉트
-                router.push(`/nearby?latitude=${latitude}&longitude=${longitude}`);
-            } else {
-                alert("위치 기반 검색에 실패했습니다.");
-            }
         } catch (err) {
             console.error("위치 정보 가져오기 실패:", err);
             alert("위치 정보를 가져올 수 없습니다.");
