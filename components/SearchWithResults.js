@@ -4,14 +4,18 @@ import {useEffect, useState} from "react";
 import {FaBookmark, FaRegBookmark, FaSearch} from "react-icons/fa";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import PopularSearches from "@/components/PopularSearches";
+import {useRouter} from "next/navigation";
 
 export default function SearchWithResults() {
+    const router = useRouter();
+
     const [query, setQuery] = useState("");
     const [cafes, setCafes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [warning, setWarning] = useState("");
-    const [favorites, setFavorites] = useState([]); // 각 카페의 즐겨찾기 여부를 저장
+    const [searchTitle, setSearchTitle] = useState("");
+    const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
         setFavorites(cafes.map(() => false)); // cafes가 바뀔 때마다 초기화
@@ -66,38 +70,10 @@ export default function SearchWithResults() {
         }
     };
 
-    const handleSearch = async () => {
+    const handleSearch = () => {
         if (!query.trim()) return;
 
-        setLoading(true);
-        setHasSearched(true);
-
-        try {
-            const response = await fetch('/api/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({query}),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setCafes(data.recommendedCafes);
-            } else {
-                setCafes([]);
-            }
-        } catch (error) {
-            console.error('에러 발생:', error);
-            if (error.message === '검색 결과가 없습니다.') {
-                setWarning(error.message);
-            } else {
-                setWarning('서버 오류가 발생했습니다. 다시 시도해주세요.');
-            }
-            setCafes([]);
-        } finally {
-            setLoading(false);
-        }
+        router.push(`/search?query=${encodeURIComponent(query)}`);
     };
 
     const handleChange = (e) => {
@@ -155,9 +131,11 @@ export default function SearchWithResults() {
                     <LoadingSpinner/>
                 ) : (
                     <ul className="space-y-4">
-                        <h2 className="text-xl font-bold mb-4 text-gray-800">
-                            {query ? `'${query}' 주변 카페 검색 결과` : "주변 카페 검색 결과"}
-                        </h2>
+                        {searchTitle && (
+                            <h2 className="text-xl font-bold mb-4 text-gray-800">
+                                "{searchTitle}" 주변 카페 검색 결과
+                            </h2>
+                        )}
                         {cafes.length > 0 ? (
                             cafes.map((cafe, index) => (
                                 <li

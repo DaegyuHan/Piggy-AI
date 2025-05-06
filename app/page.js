@@ -7,12 +7,10 @@ export default function Home() {
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100">
-            <NavBar/>
             {/*<Logo/>*/}
             <SearchWithResults/>
             {/* 광고 */}
             <AdBanner slot="7010780807"/>
-            <Footer/>
         </div>
     );
 }
