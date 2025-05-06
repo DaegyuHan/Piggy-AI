@@ -40,7 +40,7 @@ export async function searchNearbyCafes(lat, lng) {
     const allCafes = response.data.documents;
 
     // 필터링: 프랜차이즈 제거
-    const blacklist = ['스타벅스', '투썸플레이스', '이디야커피', '메가MGC커피', '컴포즈커피', '설빙', '벌툰', '보드게임', '빽다방', '레드버튼'];
+    const blacklist = ['스타벅스', '투썸플레이스', '이디야커피', '메가MGC커피', '컴포즈커피', '설빙', '벌툰', '보드게임', '빽다방', '레드버튼', '탐앤탐스'];
     const filtered = allCafes.filter(cafe => {
         return !blacklist.some(b => cafe.place_name.includes(b));
     });
