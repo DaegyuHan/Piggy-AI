@@ -15,7 +15,7 @@ export default async function handler(req, res) {
             parseResponse: parseCafeRecommendations,
         });
 
-        res.status(200).json({ recommendedCafes });
+        res.status(200).json({ query, recommendedCafes });
     } catch (error) {
         console.error('오류 발생:', error);
         res.status(500).json({ error: '서버 오류' });
