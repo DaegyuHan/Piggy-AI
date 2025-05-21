@@ -22,7 +22,7 @@ export default function PopularSearches() {
     return (
         <div className="flex flex-col items-center justify-start pt-1 bg-gradient-to-b from-grjay-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
             <div className="w-full p-4 bg-white rounded-2xl shadow">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">🔥 인기 검색어 TOP 5</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-800">🔥 인기 동네 검색 TOP 5</h2>
                 <ul className="space-y-2">
                     {popularKeywords.map((item, index) => (
                         <li key={index} className="flex items-center space-x-3">
