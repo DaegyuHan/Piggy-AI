@@ -1,6 +1,7 @@
 import { searchCafesFromKakao } from '@/utils/kakaoApi';
 import { getCafeRecommendations } from '@/lib/openaiCafeService';
 import { createCafePrompt, parseCafeRecommendations } from "@/utils/openaiUtils";
+const { logSearchKeyword } = require('@/lib/searchKeywordLogger');
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -14,6 +15,10 @@ export default async function handler(req, res) {
     }
 
     try {
+        if (page === 1 && query) {
+            await logSearchKeyword(query);
+        }
+
         // 첫 요청이면 Kakao API로부터 새로 가져오기
         const cafes = page === 1
             ? await searchCafesFromKakao(query)
