@@ -49,15 +49,22 @@ export default async function handler(req, res) {
             ...(page === 1 && { allCafes: cafes }),
         };
 
-        // 첫 요청이라면 캐시에 저장
+        // 캐시에 저장할 allCafes 정제
         if (page === 1) {
+            const compactAllCafes = cafes.map(cafe => ({
+                name: cafe.place_name,
+                address: cafe.road_address_name,
+                placeUrl: cafe.place_url,
+                x: cafe.x,
+                y: cafe.y,
+            }));
+
             await setCachedResult(query, {
                 recommendedCafes: recommended,
-                allCafes: cafes,
+                allCafes: compactAllCafes,
             });
         }
 
-        console.timeEnd('⏱️ /api/search total');
         res.status(200).json(responseData);
     } catch (error) {
         console.error('오류 발생:', error);
