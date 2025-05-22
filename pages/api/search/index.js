@@ -2,6 +2,7 @@ import { searchCafesFromKakao } from '@/utils/kakaoApi';
 import { getCafeRecommendations } from '@/lib/openaiCafeService';
 import { createCafePrompt, parseCafeRecommendations } from "@/utils/openaiUtils";
 const { logSearchKeyword } = require('@/lib/searchKeywordLogger');
+const { getCachedResult, setCachedResult } = require('@/lib/cache');
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -15,16 +16,22 @@ export default async function handler(req, res) {
     }
 
     try {
-        if (page === 1 && query) {
-            await logSearchKeyword(query);
+        //  Redis에서 캐시 먼저 조회
+        if (page === 1) {
+            const cached = await getCachedResult(query);
+            if (cached) {
+                return res.status(200).json({
+                    recommendedCafes: cached.recommendedCafes,
+                    allCafes: cached.allCafes,
+                });
+            }
         }
 
-        // 첫 요청이면 Kakao API로부터 새로 가져오기
+        // 기존 로직 실행
         const cafes = page === 1
             ? await searchCafesFromKakao(query)
             : allCafes;
 
-        // 이전 추천 제외
         const filtered = cafes.filter(cafe => !previousRecommendations.includes(cafe.place_name));
 
         if (filtered.length === 0) {
@@ -37,12 +44,20 @@ export default async function handler(req, res) {
             parseResponse: parseCafeRecommendations,
         });
 
-        // page === 1인 경우는 allCafes도 같이 내려보냄
         const responseData = {
             recommendedCafes: recommended,
-            ...(page === 1 && { allCafes: cafes })
+            ...(page === 1 && { allCafes: cafes }),
         };
 
+        // 첫 요청이라면 캐시에 저장
+        if (page === 1) {
+            await setCachedResult(query, {
+                recommendedCafes: recommended,
+                allCafes: cafes,
+            });
+        }
+
+        console.timeEnd('⏱️ /api/search total');
         res.status(200).json(responseData);
     } catch (error) {
         console.error('오류 발생:', error);
