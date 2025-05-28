@@ -19,7 +19,7 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
     const [outOfSearches, setOutOfSearches] = useState(false);
     const [retryAfterSeconds, setRetryAfterSeconds] = useState(null);
 
-    const isFirstRender = useRef(true); // ✅ 중복 방지용 플래그
+    const isFirstRender = useRef(true);
 
     useEffect(() => {
         if (!query && !(latitude && longitude)) return;
@@ -117,7 +117,7 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
             <div className="w-full max-w-2xl mb-6">
                 {loading ? (
                     <LoadingSpinner />
-                ) : outOfSearches ? ( // 🔥 여기 조건 추가!
+                ) : outOfSearches ? (
                     <div className="text-center text-gray-600 bg-white py-12 px-6 rounded-xl shadow">
                         <h2 className="text-xl font-bold text-red-600 mb-2">검색 제한 도달</h2>
                         <p className="text-gray-700 text-sm">오늘 검색 가능 횟수를 모두 사용하셨어요.</p>

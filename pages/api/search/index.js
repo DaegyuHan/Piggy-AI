@@ -30,42 +30,59 @@ export default async function handler(req, res) {
     try {
         await logSearchKeyword(query);
 
-        //  Redis에서 캐시 먼저 조회
+        // 캐시 확인
         if (page === 1) {
             const cached = await getCachedResult(query);
             if (cached) {
+                console.log('[CACHE HIT]', query, {
+                    recommendedCount: cached.recommendedCafes?.length,
+                    totalCafes: cached.allCafes?.length,
+                });
+
                 return res.status(200).json({
                     recommendedCafes: cached.recommendedCafes,
                     allCafes: cached.allCafes,
                     remaining,
                 });
+            } else {
+                console.log('[CACHE MISS]', query);
             }
         }
 
-        // 기존 로직 실행
+        // 카페 리스트 준비
         const cafes = page === 1
             ? await searchCafesFromKakao(query)
-            : allCafes;
+            : allCafes.map(cafe => ({
+                ...cafe,
+                place_name: cafe.name,
+                road_address_name: cafe.address,
+                place_url: cafe.placeUrl,
+                x: cafe.x,
+                y: cafe.y,
+            }));
 
+
+        // 이미 추천된 카페 제외
         const filtered = cafes.filter(cafe => !previousRecommendations.includes(cafe.place_name));
 
         if (filtered.length === 0) {
             return res.status(200).json({ recommendedCafes: [] });
         }
 
+        // OpenAI 추천
         const recommended = await getCafeRecommendations({
             cafes: filtered,
-            createPrompt: (cafes) => createCafePrompt(cafes),
+            createPrompt: createCafePrompt,
             parseResponse: parseCafeRecommendations,
         });
 
         const responseData = {
             recommendedCafes: recommended,
-            ...(page === 1 && { allCafes: cafes }),
+            allCafes: cafes,
             remaining,
         };
 
-        // 캐시에 저장할 allCafes 정제
+        // 첫 페이지일 경우 캐시에 저장
         if (page === 1) {
             const compactAllCafes = cafes.map(cafe => ({
                 name: cafe.place_name,

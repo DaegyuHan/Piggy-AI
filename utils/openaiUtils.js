@@ -28,7 +28,7 @@ export function parseCafeRecommendations(responseText, cafes) {
 
             recommendations.push({
                 name,
-                address: matchedCafe?.address_name || '주소 정보 없음',
+                address: matchedCafe?.address || matchedCafe?.road_address_name || '주소 정보 없음',
                 reason,
                 placeUrl: matchedCafe?.place_url || null,
             });
