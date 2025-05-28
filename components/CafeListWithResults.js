@@ -15,7 +15,9 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
     const [searchTitle, setSearchTitle] = useState("");
     const [favorites, setFavorites] = useState([]);
     const [page, setPage] = useState(1);
-    const [remaining, setRemaining] = useState(null); // 🔄 남은 횟수 표시용
+    const [remaining, setRemaining] = useState(null);
+    const [outOfSearches, setOutOfSearches] = useState(false);
+    const [retryAfterSeconds, setRetryAfterSeconds] = useState(null);
 
     const isFirstRender = useRef(true); // ✅ 중복 방지용 플래그
 
@@ -35,6 +37,14 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(query ? { query, page: 1 } : { latitude, longitude, page: 1 }),
                 });
+
+                if (res.status === 429) {
+                    const data = await res.json();
+                    setOutOfSearches(true);
+                    setRetryAfterSeconds(data.retryAfterSeconds);
+                    setRemaining(0);
+                    return;
+                }
 
                 const data = await res.json();
                 setAllCafes(data.allCafes || []);
@@ -94,11 +104,29 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
         }
     };
 
+    const formatTimeAfterSeconds = (seconds) => {
+        const future = new Date(Date.now() + seconds * 1000);
+        return future.toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
     return (
         <div className="flex flex-col items-center justify-start pt-1 min-h-screen bg-gradient-to-b from-gray-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
             <div className="w-full max-w-2xl mb-6">
                 {loading ? (
                     <LoadingSpinner />
+                ) : outOfSearches ? ( // 🔥 여기 조건 추가!
+                    <div className="text-center text-gray-600 bg-white py-12 px-6 rounded-xl shadow">
+                        <h2 className="text-xl font-bold text-red-600 mb-2">검색 제한 도달</h2>
+                        <p className="text-gray-700 text-sm">오늘 검색 가능 횟수를 모두 사용하셨어요.</p>
+                        {retryAfterSeconds !== null && (
+                            <p className="text-gray-500 text-sm mt-2">
+                                <span className="font-medium text-gray-700">{formatTimeAfterSeconds(retryAfterSeconds)}</span> 이후 다시 검색하실 수 있어요.
+                            </p>
+                        )}
+                    </div>
                 ) : (
                     <>
                         {searchTitle && (
