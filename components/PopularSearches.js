@@ -1,11 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function PopularSearches() {
     const [popularKeywords, setPopularKeywords] = useState([]);
+    const hasFetched = useRef(false); // ✅ 중복 실행 방지
 
     useEffect(() => {
+        if (hasFetched.current) return; // ✅ 이미 실행했으면 skip
+        hasFetched.current = true;
+
         const fetchPopular = async () => {
             try {
                 const res = await fetch('/api/popular');
@@ -20,7 +24,7 @@ export default function PopularSearches() {
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-start pt-1 bg-gradient-to-b from-grjay-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
+        <div className="flex flex-col items-center justify-start pt-1 bg-gradient-to-b from-gray-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
             <div className="w-full p-4 bg-white rounded-2xl shadow">
                 <h2 className="text-xl font-semibold mb-4 text-gray-800">🔥 인기 동네 검색 TOP 5</h2>
                 <ul className="space-y-2">

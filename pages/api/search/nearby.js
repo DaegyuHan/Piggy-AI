@@ -1,9 +1,21 @@
 import { searchNearbyCafes } from '@/utils/kakaoApi';
 import { getCafeRecommendations } from '@/lib/openaiCafeService';
 import { createCafePrompt, parseCafeRecommendations } from "@/utils/openaiUtils";
+import { increaseSearchCount } from '@/lib/rateLimiter';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    const { allowed, ttl, remaining } = await increaseSearchCount(ip);
+
+    if (!allowed) {
+        return res.status(429).json({
+            error: '검색 횟수 제한 초과',
+            retryAfterSeconds: ttl,
+            remaining: 0,
+        });
+    }
 
     const {
         latitude,

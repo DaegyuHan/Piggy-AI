@@ -3,17 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaSearch } from "react-icons/fa";
-import PopularSearches from "@/components/PopularSearches";
 
 export default function SearchInput() {
     const router = useRouter();
     const [query, setQuery] = useState("");
     const [warning, setWarning] = useState("");
+    const [remaining, setRemaining] = useState(null);
 
     const handleSearch = () => {
         if (!query.trim()) return;
         router.push(`/search?query=${encodeURIComponent(query)}`);
     };
+
 
     const handleChange = (e) => {
         const value = e.target.value;
@@ -41,9 +42,8 @@ export default function SearchInput() {
             const { latitude, longitude } = pos.coords;
 
             router.push(`/nearby?latitude=${latitude}&longitude=${longitude}`);
-
         } catch (err) {
-            console.error("위치 정보 가져오기 실패:", err);
+            console.error("위치 기반 검색 실패:", err);
             alert("위치 정보를 가져올 수 없습니다.");
         }
     };
@@ -70,8 +70,15 @@ export default function SearchInput() {
                     <FaSearch size={22} />
                 </button>
             </div>
+
             {warning && (
                 <p className="text-red-500 mt-2 text-sm">{warning}</p>
+            )}
+
+            {remaining !== null && !warning && (
+                <p className="mt-3 text-sm text-gray-500">
+                    오늘 남은 검색 가능 횟수: <span className="font-semibold">{remaining}</span>회
+                </p>
             )}
 
             <div className="w-full mt-2 mb-2">

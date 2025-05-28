@@ -1,24 +1,29 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function CafeListWithResults({ query, latitude, longitude }) {
-    const [allCafes, setAllCafes] = useState([]); // Kakao API 전체 카페 목록
-    const [recommended, setRecommended] = useState([]); // OpenAI 추천된 카페 누적
+    const [allCafes, setAllCafes] = useState([]);
+    const [recommended, setRecommended] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
-    const [hasLoadedMore, setHasLoadedMore] = useState(false); // 딱 1번만 누를 수 있게
+    const [hasLoadedMore, setHasLoadedMore] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [warning, setWarning] = useState("");
     const [searchTitle, setSearchTitle] = useState("");
     const [favorites, setFavorites] = useState([]);
-    const [page, setPage] = useState(1); // 현재 페이지 (1 = 첫 추천, 2 = 추가 추천 등)
+    const [page, setPage] = useState(1);
+    const [remaining, setRemaining] = useState(null); // 🔄 남은 횟수 표시용
 
+    const isFirstRender = useRef(true); // ✅ 중복 방지용 플래그
 
     useEffect(() => {
         if (!query && !(latitude && longitude)) return;
+
+        if (!isFirstRender.current) return;
+        isFirstRender.current = false;
 
         setLoading(true);
         setHasSearched(true);
@@ -35,6 +40,7 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
                 setAllCafes(data.allCafes || []);
                 setRecommended(data.recommendedCafes || []);
                 setSearchTitle(query ? query : "내 주변");
+                setRemaining(data.remaining ?? null);
                 setPage(1);
             } catch (error) {
                 console.error('에러 발생:', error);
@@ -88,7 +94,6 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
         }
     };
 
-
     return (
         <div className="flex flex-col items-center justify-start pt-1 min-h-screen bg-gradient-to-b from-gray-100 to-gray-100 px-4 w-full max-w-2xl mx-auto">
             <div className="w-full max-w-2xl mb-6">
@@ -101,6 +106,13 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
                                 "{searchTitle}" 카페 검색 결과
                             </h2>
                         )}
+
+                        {remaining !== null && (
+                            <p className="mb-4 text-sm text-gray-500">
+                                오늘 남은 검색 가능 횟수: <span className="font-semibold">{remaining}</span>회
+                            </p>
+                        )}
+
                         <ul className="space-y-4">
                             {recommended.length > 0 ? (
                                 recommended.map((cafe, index) => (
@@ -112,7 +124,7 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
                                         >
                                             {favorites[index] ? <FaBookmark size={20} /> : <FaRegBookmark size={20} />}
                                         </button>
-                                        <h3 className="text-lg font-semibold text-gray-800 mb-1">{index+1}. {cafe.name}</h3>
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-1">{index + 1}. {cafe.name}</h3>
                                         <p className="text-gray-600 text-sm">{cafe.address || cafe.road_address_name}</p>
                                         <p className="text-gray-700 mt-2">{cafe.reason}</p>
                                         <a
@@ -134,8 +146,7 @@ export default function CafeListWithResults({ query, latitude, longitude }) {
                             )}
                         </ul>
 
-                        {/* 결과 더 보기 버튼 */}
-                        {!loading && !hasLoadedMore && (
+                        {!loading && !hasLoadedMore && recommended.length > 0 && (
                             <div className="mt-6 w-full">
                                 {loadingMore ? (
                                     <div className="flex justify-center items-center py-6">
