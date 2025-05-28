@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
     try {
         await logSearchKeyword(query);
-        
+
         //  Redis에서 캐시 먼저 조회
         if (page === 1) {
             const cached = await getCachedResult(query);
@@ -37,6 +37,7 @@ export default async function handler(req, res) {
                 return res.status(200).json({
                     recommendedCafes: cached.recommendedCafes,
                     allCafes: cached.allCafes,
+                    remaining,
                 });
             }
         }
@@ -61,6 +62,7 @@ export default async function handler(req, res) {
         const responseData = {
             recommendedCafes: recommended,
             ...(page === 1 && { allCafes: cafes }),
+            remaining,
         };
 
         // 캐시에 저장할 allCafes 정제

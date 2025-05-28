@@ -10,7 +10,7 @@ function SearchPageContent() {
     const searchParams = useSearchParams();
     const query = searchParams.get("query");
 
-    return <CafeListWithResults query={query} />;
+    return <CafeListWithResults key={query} query={query} />;
 }
 
 export default function SearchPage() {
