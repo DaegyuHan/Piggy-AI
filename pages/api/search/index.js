@@ -30,7 +30,6 @@ export default async function handler(req, res) {
     try {
         await logSearchKeyword(query);
 
-        // 캐시 확인
         if (page === 1) {
             const cached = await getCachedResult(query);
             if (cached) {
@@ -49,7 +48,6 @@ export default async function handler(req, res) {
             }
         }
 
-        // 카페 리스트 준비
         const cafes = page === 1
             ? await searchCafesFromKakao(query)
             : allCafes.map(cafe => ({
@@ -61,30 +59,21 @@ export default async function handler(req, res) {
                 y: cafe.y,
             }));
 
-
-        // 이미 추천된 카페 제외
         const filtered = cafes.filter(cafe => !previousRecommendations.includes(cafe.place_name));
 
         if (filtered.length === 0) {
-            return res.status(200).json({ recommendedCafes: [] });
+            return res.status(200).json({ recommendedCafes: [], allCafes: cafes, remaining });
         }
 
-        // OpenAI 추천
         const recommended = await getCafeRecommendations({
             cafes: filtered,
             createPrompt: createCafePrompt,
             parseResponse: parseCafeRecommendations,
         });
 
-        const responseData = {
-            recommendedCafes: recommended,
-            allCafes: cafes,
-            remaining,
-        };
-
-        // 첫 페이지일 경우 캐시에 저장
+        let compactAllCafes = cafes;
         if (page === 1) {
-            const compactAllCafes = cafes.map(cafe => ({
+            compactAllCafes = cafes.map(cafe => ({
                 name: cafe.place_name,
                 address: cafe.road_address_name,
                 placeUrl: cafe.place_url,
@@ -98,7 +87,11 @@ export default async function handler(req, res) {
             });
         }
 
-        res.status(200).json(responseData);
+        return res.status(200).json({
+            recommendedCafes: recommended,
+            allCafes: compactAllCafes,
+            remaining,
+        });
     } catch (error) {
         console.error('오류 발생:', error);
         res.status(500).json({ error: '서버 내부 오류' });

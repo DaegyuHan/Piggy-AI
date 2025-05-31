@@ -34,24 +34,27 @@ export default async function handler(req, res) {
             ? await searchNearbyCafes(latitude, longitude)
             : allCafes;
 
-        // 이전 추천 제거
-        const remaining = cafes.filter(cafe =>
+        const filtered = cafes.filter(cafe =>
             !previousRecommendations.includes(cafe.place_name)
         );
 
-        if (remaining.length === 0) {
-            return res.status(200).json({ recommendedCafes: [] });
+        if (filtered.length === 0) {
+            return res.status(200).json({
+                recommendedCafes: [],
+                remaining, // ✅ 여기도 포함
+            });
         }
 
         const recommendedCafes = await getCafeRecommendations({
-            cafes: remaining,
-            createPrompt: (cafes) => createCafePrompt(cafes),
+            cafes: filtered,
+            createPrompt: createCafePrompt,
             parseResponse: parseCafeRecommendations,
         });
 
         const responseData = {
             recommendedCafes,
             ...(page === 1 && { allCafes: cafes }),
+            remaining, // ✅ 프론트에 검색 가능 횟수 전달
         };
 
         res.status(200).json(responseData);
