@@ -1,7 +1,11 @@
-![logo(180)](https://github.com/user-attachments/assets/c6544a9b-d0fc-4a81-8c3c-0f034e86fec2)
+
+![piggy-icon-180](https://github.com/user-attachments/assets/777ce368-4b1c-41d4-a0ab-267bb30a4c06)
+
 # Piggy AI 홈페이지
+
+
 ### 🐷 서비스 링크
-[https://www.goalpostagian.com](https://piggyai-git-main-daegyuhans-projects.vercel.app/)
+[웹사이트 연결](https://piggyai-git-main-daegyuhans-projects.vercel.app/)
 ### 🐷 개발 일지
 [https://hanstory33.tistory.com/category/Project/%EC%B6%95%EA%B5%AC%EB%AA%A8%EC%9E%84%20%ED%99%88%ED%8E%98%EC%9D%B4%EC%A7%80%EA%B0%9C%EB%B0%9C](https://hanstory33.tistory.com/category/Project/Piggy%20AI)
 ### 🐷 개발 기간
